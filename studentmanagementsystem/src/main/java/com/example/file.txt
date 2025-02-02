@@ -1,0 +1,708 @@
+// public class CourseManagement extends JFrame {
+//         private DefaultTableModel model;
+//         private DefaultTableModel originalModel; // Store the original model
+
+//         public CourseManagement() {
+//                 setSize(1500, 800);
+//                 setLayout(null);
+//                 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+//                 JPanel p1 = new JPanel();
+//                 p1.setBounds(0, 0, 1500, 800);
+//                 p1.setBackground(Color.white);
+//                 p1.setLayout(null);
+//                 add(p1);
+
+//                 JLabel l1 = new JLabel("COURSE MANAGEMENT");
+//                 l1.setBounds(30, 20, 800, 40);
+//                 l1.setFont(new Font("poppins", Font.BOLD, 36));
+//                 p1.add(l1);
+
+//                 Color buttonColor = Color.decode("#8FB6FF");
+
+//                 JButton b1 = new JButton("Student Information");
+//                 b1.setBounds(30, 80, 250, 40);
+//                 b1.setFont(new Font("Arial", Font.PLAIN, 18));
+//                 b1.setBackground(buttonColor);
+//                 p1.add(b1);
+
+//                 JButton b2 = new JButton("Student Course");
+//                 b2.setBounds(300, 80, 250, 40);
+//                 b2.setFont(new Font("Arial", Font.PLAIN, 18));
+//                 b2.setBackground(buttonColor);
+//                 p1.add(b2);
+
+//                 JPanel p2 = new JPanel();
+//                 p2.setBounds(30, 120, 1450, 600);
+//                 p2.setBackground(Color.WHITE);
+//                 p2.setBorder(new LineBorder(Color.BLACK, 2));
+//                 p2.setLayout(null);
+//                 p1.add(p2);
+
+//                 JLabel l3 = new JLabel("Search Student Course:");
+//                 l3.setBounds(30, 20, 200, 30);
+//                 l3.setFont(new Font("Arial", Font.PLAIN, 18));
+//                 p2.add(l3);
+
+//                 JTextField t1 = new JTextField();
+//                 t1.setBounds(250, 20, 500, 30);
+//                 t1.setBorder(new LineBorder(Color.BLACK, 2));
+//                 t1.setFont(new Font("Arial", Font.PLAIN, 18));
+//                 p2.add(t1);
+
+//                 JButton b3 = new JButton("Search");
+//                 b3.setBounds(770, 20, 150, 30);
+//                 b3.setFont(new Font("Arial", Font.PLAIN, 18));
+//                 b3.setBackground(buttonColor);
+//                 p2.add(b3);
+
+//                 JButton b4 = new JButton("Back");
+//                 b4.setBounds(940, 20, 150, 30);
+//                 b4.setFont(new Font("Arial", Font.PLAIN, 18));
+//                 b4.setBackground(buttonColor);
+//                 p2.add(b4);
+//                 b4.addActionListener(e -> {
+//                         try {
+//                                 // Reload all courses into the table
+//                                 loadAllCourses();
+//                                 t1.setText(""); // Clear the search text field
+//                                 JOptionPane.showMessageDialog(this, "Table restored to original data!");
+//                         } catch (Exception ex) {
+//                                 ex.printStackTrace();
+//                                 JOptionPane.showMessageDialog(this,
+//                                                 "Failed to reload original data: " + ex.getMessage(), "Error",
+//                                                 JOptionPane.ERROR_MESSAGE);
+//                         }
+//                 });
+
+//                 JPanel p3 = new JPanel();
+//                 p3.setBounds(20, 70, 1420, 450);
+//                 p3.setBackground(Color.LIGHT_GRAY);
+//                 p3.setBorder(new LineBorder(Color.BLACK, 2));
+//                 p3.setLayout(new BorderLayout());
+//                 p2.add(p3);
+
+//                 String[] column = {
+//                                 "StudentID", "Year", "Semester 1", "Course 1", "Course 2", "Course 3", "Course 4",
+//                                 "Course 5", "Semester 2", "Course 6", "Course 7", "Course 8", "Course 9",
+//                                 "Course 10"
+//                 };
+//                 model = new DefaultTableModel(null, column);
+//                 originalModel = model; // Save the original model
+//                 JTable jt = new JTable(model);
+//                 JScrollPane sp = new JScrollPane(jt);
+//                 p3.add(sp);
+
+//                 JButton b5 = new JButton("Add");
+//                 b5.setBounds(20, 530, 150, 40);
+//                 b5.setFont(new Font("Arial", Font.PLAIN, 18));
+//                 b5.setBackground(buttonColor);
+//                 p2.add(b5);
+
+//                 JButton b6 = new JButton("Update");
+//                 b6.setBounds(280, 530, 150, 40);
+//                 b6.setFont(new Font("Arial", Font.PLAIN, 18));
+//                 b6.setBackground(buttonColor);
+//                 p2.add(b6);
+
+//                 JButton b7 = new JButton("Delete");
+//                 b7.setBounds(550, 530, 150, 40);
+//                 b7.setFont(new Font("Arial", Font.PLAIN, 18));
+//                 b7.setBackground(buttonColor);
+//                 p2.add(b7);
+
+//                 JButton b8 = new JButton("Clear Form");
+//                 b8.setBounds(800, 530, 150, 40);
+//                 b8.setFont(new Font("Arial", Font.PLAIN, 18));
+//                 b8.setBackground(buttonColor);
+//                 p2.add(b8);
+
+//                 JButton b10 = new JButton("Log Out");
+//                 b10.setBounds(1290, 530, 150, 40);
+//                 b10.setFont(new Font("Arial", Font.PLAIN, 18));
+//                 b10.setBackground(buttonColor);
+//                 p2.add(b10);
+
+//                 b3.addActionListener(e -> {
+//                         String searchID = t1.getText().trim();
+//                         if (searchID == null || searchID.isEmpty()) {
+//                                 JOptionPane.showMessageDialog(this, "Please enter a valid Student ID!");
+//                                 return;
+//                         }
+
+//                         try (MongoClient mongoClient = MongoClients.create(
+//                                         "mongodb+srv://Admin:admin12345@adminsystem.kedip.mongodb.net/?retryWrites=true&w=majority")) {
+//                                 MongoDatabase database = mongoClient.getDatabase("AdminSystem");
+//                                 MongoCollection<Document> collection = database.getCollection("CourseManagement");
+
+//                                 Document query = new Document("studentID", searchID);
+//                                 Document result = collection.find(query).first();
+
+//                                 if (result != null) {
+//                                         Course course = new Course(
+//                                                         result.getString("studentID"),
+//                                                         result.getInteger("year", 0),
+//                                                         result.getInteger("semester1", 0),
+//                                                         result.getString("course1"),
+//                                                         result.getString("course2"),
+//                                                         result.getString("course3"),
+//                                                         result.getString("course4"),
+//                                                         result.getString("course5"),
+//                                                         result.getInteger("semester2", 0),
+//                                                         result.getString("course6"),
+//                                                         result.getString("course7"),
+//                                                         result.getString("course8"),
+//                                                         result.getString("course9"),
+//                                                         result.getString("course10"));
+
+//                                         // Update table with the search result
+//                                         DefaultTableModel model = (DefaultTableModel) jt.getModel();
+//                                         model.setRowCount(0);
+//                                         model.addRow(new Object[] {
+//                                                         course.getStudentID(),
+//                                                         course.getStudentYear(),
+//                                                         course.getStudentSemester1(),
+//                                                         course.getStudentCourse1(),
+//                                                         course.getStudentCourse2(),
+//                                                         course.getStudentCourse3(),
+//                                                         course.getStudentCourse4(),
+//                                                         course.getStudentCourse5(),
+//                                                         course.getStudentSemester2(),
+//                                                         course.getStudentCourse6(),
+//                                                         course.getStudentCourse7(),
+//                                                         course.getStudentCourse8(),
+//                                                         course.getStudentCourse9(),
+//                                                         course.getStudentCourse10()
+//                                         });
+
+//                                         JOptionPane.showMessageDialog(this, "Search completed!");
+//                                 } else {
+//                                         JOptionPane.showMessageDialog(this,
+//                                                         "No course found for Student ID: " + searchID);
+//                                 }
+//                         } catch (Exception ex) {
+//                                 ex.printStackTrace();
+//                                 JOptionPane.showMessageDialog(this, "Database connection failed: " + ex.getMessage(),
+//                                                 "Error",
+//                                                 JOptionPane.ERROR_MESSAGE);
+//                         }
+//                 });
+
+//                 // Update the Back button to restore the original model
+//                 b4.addActionListener(e -> {
+//                         jt.setModel(originalModel); // Restore the original model
+//                         t1.setText(""); // Clear the search text field
+//                         // JOptionPane.showMessageDialog(this, "Table restored to original state!");
+//                 });
+
+//                 b5.addActionListener(e -> new AddCourse(model).setVisible(true));
+
+//                 b6.addActionListener(e -> {
+//                         int selectedRow = jt.getSelectedRow();
+//                         if (selectedRow != -1) {
+//                                 try {
+//                                         // Retrieve data from JTable
+//                                         String studentID = model.getValueAt(selectedRow, 0) != null
+//                                                         ? model.getValueAt(selectedRow, 0).toString()
+//                                                         : "";
+//                                         String year = model.getValueAt(selectedRow, 1) != null
+//                                                         ? model.getValueAt(selectedRow, 1).toString()
+//                                                         : "";
+//                                         String semester1 = model.getValueAt(selectedRow, 2) != null
+//                                                         ? model.getValueAt(selectedRow, 2).toString()
+//                                                         : "";
+//                                         String course1 = model.getValueAt(selectedRow, 3) != null
+//                                                         ? model.getValueAt(selectedRow, 3).toString()
+//                                                         : "";
+//                                         String course2 = model.getValueAt(selectedRow, 4) != null
+//                                                         ? model.getValueAt(selectedRow, 4).toString()
+//                                                         : "";
+//                                         String course3 = model.getValueAt(selectedRow, 5) != null
+//                                                         ? model.getValueAt(selectedRow, 5).toString()
+//                                                         : "";
+//                                         String course4 = model.getValueAt(selectedRow, 6) != null
+//                                                         ? model.getValueAt(selectedRow, 6).toString()
+//                                                         : "";
+//                                         String course5 = model.getValueAt(selectedRow, 7) != null
+//                                                         ? model.getValueAt(selectedRow, 7).toString()
+//                                                         : "";
+//                                         String semester2 = model.getValueAt(selectedRow, 8) != null
+//                                                         ? model.getValueAt(selectedRow, 8).toString()
+//                                                         : "";
+//                                         String course6 = model.getValueAt(selectedRow, 9) != null
+//                                                         ? model.getValueAt(selectedRow, 9).toString()
+//                                                         : "";
+//                                         String course7 = model.getValueAt(selectedRow, 10) != null
+//                                                         ? model.getValueAt(selectedRow, 10).toString()
+//                                                         : "";
+//                                         String course8 = model.getValueAt(selectedRow, 11) != null
+//                                                         ? model.getValueAt(selectedRow, 11).toString()
+//                                                         : "";
+//                                         String course9 = model.getValueAt(selectedRow, 12) != null
+//                                                         ? model.getValueAt(selectedRow, 12).toString()
+//                                                         : "";
+//                                         String course10 = model.getValueAt(selectedRow, 13) != null
+//                                                         ? model.getValueAt(selectedRow, 13).toString()
+//                                                         : "";
+
+//                                         // Create JComboBoxes and JTextFields for editing
+//                                         JTextField stu = new JTextField(studentID, 20);
+//                                         JComboBox<String> y1 = new JComboBox<>(
+//                                                         new String[] { "Select Year", "1", "2", "3", "4", "5" });
+//                                         y1.setSelectedItem(year);
+
+//                                         JComboBox<String> s1 = new JComboBox<>(new String[] { "1" });
+//                                         s1.setSelectedItem(semester1);
+
+//                                         JComboBox<String> c1 = new JComboBox<>(
+//                                                         new String[] { "Select Course 1", "Management & Accounting",
+//                                                                         "Advanced Computer Architecture" });
+//                                         c1.setSelectedItem(course1);
+
+//                                         JComboBox<String> c2 = new JComboBox<>(
+//                                                         new String[] { "Select Course 2", "Mathematics 1",
+//                                                                         "Artificial Intelligence" });
+//                                         c2.setSelectedItem(course2);
+
+//                                         JComboBox<String> c3 = new JComboBox<>(
+//                                                         new String[] { "Select Course 3", "Electricity",
+//                                                                         "Algorithms And Programming" });
+//                                         c3.setSelectedItem(course3);
+
+//                                         JComboBox<String> c4 = new JComboBox<>(new String[] { "Select Course 4",
+//                                                         "Object-Oriented Programming", "Human Computer Interaction" });
+//                                         c4.setSelectedItem(course4);
+
+//                                         JComboBox<String> c5 = new JComboBox<>(new String[] { "Select Course 5",
+//                                                         "Information System Analysis and Design", "Operation System" });
+//                                         c5.setSelectedItem(course5);
+
+//                                         JComboBox<String> s2 = new JComboBox<>(new String[] { "2" });
+//                                         s2.setSelectedItem(semester2);
+
+//                                         JComboBox<String> c6 = new JComboBox<>(
+//                                                         new String[] { "Database", "Network 2" });
+//                                         c6.setSelectedItem(course6);
+
+//                                         JComboBox<String> c7 = new JComboBox<>(
+//                                                         new String[] { "Distributed System", "Automata Theory" });
+//                                         c7.setSelectedItem(course7);
+
+//                                         JComboBox<String> c8 = new JComboBox<>(
+//                                                         new String[] { "Theoretical Computer Science",
+//                                                                         "Internet Programming 2" });
+//                                         c8.setSelectedItem(course8);
+
+//                                         JComboBox<String> c9 = new JComboBox<>(
+//                                                         new String[] { "System And Network Administration", "MATLAB" });
+//                                         c9.setSelectedItem(course9);
+
+//                                         JComboBox<String> c10 = new JComboBox<>(
+//                                                         new String[] { "Software Development And IT Operation",
+//                                                                         "Web Design" });
+//                                         c10.setSelectedItem(course10);
+
+//                                         // Create panel
+//                                         JPanel panel = new JPanel(new GridLayout(15, 2, 15, 15));
+//                                         panel.add(new JLabel("Student ID:"));
+//                                         panel.add(stu);
+//                                         panel.add(new JLabel("Year:"));
+//                                         panel.add(y1);
+//                                         panel.add(new JLabel("Semester 1:"));
+//                                         panel.add(s1);
+//                                         panel.add(new JLabel("Course 1:"));
+//                                         panel.add(c1);
+//                                         panel.add(new JLabel("Course 2:"));
+//                                         panel.add(c2);
+//                                         panel.add(new JLabel("Course 3:"));
+//                                         panel.add(c3);
+//                                         panel.add(new JLabel("Course 4:"));
+//                                         panel.add(c4);
+//                                         panel.add(new JLabel("Course 5:"));
+//                                         panel.add(c5);
+//                                         panel.add(new JLabel("Semester 2:"));
+//                                         panel.add(s2);
+//                                         panel.add(new JLabel("Course 6:"));
+//                                         panel.add(c6);
+//                                         panel.add(new JLabel("Course 7:"));
+//                                         panel.add(c7);
+//                                         panel.add(new JLabel("Course 8:"));
+//                                         panel.add(c8);
+//                                         panel.add(new JLabel("Course 9:"));
+//                                         panel.add(c9);
+//                                         panel.add(new JLabel("Course 10:"));
+//                                         panel.add(c10);
+
+//                                         // Show dialog
+//                                         int option = JOptionPane.showConfirmDialog(null, panel, "Update Semester 2",
+//                                                         JOptionPane.OK_CANCEL_OPTION);
+
+//                                         if (option == JOptionPane.OK_OPTION) {
+//                                                 // Use your MongoDB connection string
+//                                                 String connectionString = "mongodb+srv://Admin:admin12345@adminsystem.kedip.mongodb.net/?retryWrites=true&w=majority";
+
+//                                                 try (MongoClient mongoClient = MongoClients.create(connectionString)) {
+//                                                         MongoDatabase database = mongoClient.getDatabase("AdminSystem");
+//                                                         MongoCollection<Document> collection = database
+//                                                                         .getCollection("CourseManagement");
+
+//                                                         // Update MongoDB
+//                                                         Document query = new Document("studentID", studentID);
+//                                                         Document update = new Document("$set", new Document()
+//                                                                         .append("year", y1.getSelectedItem())
+//                                                                         .append("semester1", s1.getSelectedItem())
+//                                                                         .append("course1", c1.getSelectedItem())
+//                                                                         .append("course2", c2.getSelectedItem())
+//                                                                         .append("course3", c3.getSelectedItem())
+//                                                                         .append("course4", c4.getSelectedItem())
+//                                                                         .append("course5", c5.getSelectedItem())
+//                                                                         .append("semester2", s2.getSelectedItem())
+//                                                                         .append("course6", c6.getSelectedItem())
+//                                                                         .append("course7", c7.getSelectedItem())
+//                                                                         .append("course8", c8.getSelectedItem())
+//                                                                         .append("course9", c9.getSelectedItem())
+//                                                                         .append("course10", c10.getSelectedItem()));
+
+//                                                         collection.updateOne(query, update);
+//                                                         JOptionPane.showMessageDialog(null,
+//                                                                         "Courses updated successfully!");
+
+//                                                         // Update JTable
+//                                                         model.setValueAt(y1.getSelectedItem(), selectedRow, 1);
+//                                                         model.setValueAt(s1.getSelectedItem(), selectedRow, 2);
+//                                                         model.setValueAt(c1.getSelectedItem(), selectedRow, 3);
+//                                                         model.setValueAt(c2.getSelectedItem(), selectedRow, 4);
+//                                                         model.setValueAt(c3.getSelectedItem(), selectedRow, 5);
+//                                                         model.setValueAt(c4.getSelectedItem(), selectedRow, 6);
+//                                                         model.setValueAt(c5.getSelectedItem(), selectedRow, 7);
+//                                                         model.setValueAt(s2.getSelectedItem(), selectedRow, 8);
+//                                                         model.setValueAt(c6.getSelectedItem(), selectedRow, 9);
+//                                                         model.setValueAt(c7.getSelectedItem(), selectedRow, 10);
+//                                                         model.setValueAt(c8.getSelectedItem(), selectedRow, 11);
+//                                                         model.setValueAt(c9.getSelectedItem(), selectedRow, 12);
+//                                                         model.setValueAt(c10.getSelectedItem(), selectedRow, 13);
+//                                                 }
+//                                         }
+//                                 } catch (Exception ex) {
+//                                         ex.printStackTrace();
+//                                         JOptionPane.showMessageDialog(null,
+//                                                         "Error updating courses: " + ex.getMessage(), "Error",
+//                                                         JOptionPane.ERROR_MESSAGE);
+//                                 }
+//                         } else {
+//                                 JOptionPane.showMessageDialog(null, "Please select a row to update!");
+//                         }
+//                 });
+
+//                 b7.addActionListener(e -> {
+//                         int selectedRow = jt.getSelectedRow(); // Get the selected row
+//                         if (selectedRow != -1) {
+//                                 // Create a Course object for the selected row
+//                                 Course courseToDelete = new Course(
+//                                                 (String) model.getValueAt(selectedRow, 0), // studentID
+//                                                 Integer.parseInt(model.getValueAt(selectedRow, 1).toString()), // year
+//                                                 Integer.parseInt(model.getValueAt(selectedRow, 2).toString()), // semester1
+//                                                 (String) model.getValueAt(selectedRow, 3), // course1
+//                                                 (String) model.getValueAt(selectedRow, 4), // course2
+//                                                 (String) model.getValueAt(selectedRow, 5), // course3
+//                                                 (String) model.getValueAt(selectedRow, 6), // course4
+//                                                 (String) model.getValueAt(selectedRow, 7), // course5
+//                                                 Integer.parseInt(model.getValueAt(selectedRow, 8).toString()), // semester2
+//                                                 (String) model.getValueAt(selectedRow, 9), // course6
+//                                                 (String) model.getValueAt(selectedRow, 10), // course7
+//                                                 (String) model.getValueAt(selectedRow, 11), // course8
+//                                                 (String) model.getValueAt(selectedRow, 12), // course9
+//                                                 (String) model.getValueAt(selectedRow, 13) // course10
+//                                 );
+
+//                                 // Delete the record from MongoDB using the Course object
+//                                 try (MongoClient mongoClient = MongoClients.create(
+//                                                 "mongodb+srv://Admin:admin12345@adminsystem.kedip.mongodb.net/?retryWrites=true&w=majority")) {
+//                                         MongoDatabase database = mongoClient.getDatabase("AdminSystem");
+//                                         MongoCollection<Document> collection = database
+//                                                         .getCollection("CourseManagement");
+
+//                                         // Delete query based on student ID
+//                                         Document query = new Document("studentID", courseToDelete.getStudentID());
+//                                         collection.deleteOne(query); // Delete the document from the database
+
+//                                         // Remove the row from JTable
+//                                         model.removeRow(selectedRow);
+
+//                                         JOptionPane.showMessageDialog(this, "Record deleted successfully!");
+//                                 } catch (Exception ex) {
+//                                         ex.printStackTrace();
+//                                         JOptionPane.showMessageDialog(this,
+//                                                         "Failed to delete record: " + ex.getMessage(), "Error",
+//                                                         JOptionPane.ERROR_MESSAGE);
+//                                 }
+//                         } else {
+//                                 JOptionPane.showMessageDialog(this, "Please select a row to delete!");
+//                         }
+//                 });
+
+//                 b8.addActionListener(e -> {
+//                         // Clear the search text field
+//                         t1.setText("");
+
+//                         // Clear all rows from the JTable
+//                         model.setRowCount(0);
+
+//                         // Clear all records from MongoDB (optional)
+//                         try (MongoClient mongoClient = MongoClients.create(
+//                                         "mongodb+srv://Admin:admin12345@adminsystem.kedip.mongodb.net/?retryWrites=true&w=majority")) {
+//                                 MongoDatabase database = mongoClient.getDatabase("AdminSystem");
+//                                 MongoCollection<Document> collection = database.getCollection("CourseManagement");
+
+//                                 // Confirm before clearing all records
+//                                 int confirm = JOptionPane.showConfirmDialog(
+//                                                 this,
+//                                                 "Are you sure you want to clear all records from the database?",
+//                                                 "Confirm Clear",
+//                                                 JOptionPane.YES_NO_OPTION);
+
+//                                 if (confirm == JOptionPane.YES_OPTION) {
+//                                         // Delete all documents from the collection
+//                                         collection.deleteMany(new Document());
+//                                         JOptionPane.showMessageDialog(this, "All records cleared successfully!");
+//                                 }
+//                         } catch (Exception ex) {
+//                                 ex.printStackTrace();
+//                                 JOptionPane.showMessageDialog(this, "Failed to clear records: " + ex.getMessage(),
+//                                                 "Error",
+//                                                 JOptionPane.ERROR_MESSAGE);
+//                         }
+//                 });
+
+//                 b10.addActionListener(e -> {
+//                         dispose();
+//                         new MainSystem().setVisible(true);
+//                 });
+//                 loadAllCourses();
+
+//         }
+
+//         private List<Object[]> originalData = new ArrayList<>();
+
+//         // Utility method to safely parse an integer from an object
+//         private int parseInteger(Object value) {
+//                 if (value == null) {
+//                         return 0; // Return default value for null
+//                 }
+//                 try {
+//                         if (value instanceof Integer) {
+//                                 return (Integer) value; // Return directly if it's already an Integer
+//                         }
+//                         if (value instanceof String) {
+//                                 return Integer.parseInt((String) value); // Convert from String to Integer
+//                         }
+//                 } catch (NumberFormatException ex) {
+//                         System.err.println("Failed to parse integer from value: " + value);
+//                 }
+//                 return 0; // Return default value if parsing fails
+//         }
+
+//         private void loadAllCourses() {
+//                 model.setRowCount(0); // Clear existing rows in the table
+//                 originalData.clear(); // Clear previously stored original data
+
+//                 try (MongoClient mongoClient = MongoClients.create(
+//                                 "mongodb+srv://Admin:admin12345@adminsystem.kedip.mongodb.net/?retryWrites=true&w=majority")) {
+//                         // Connect to the database and collection
+//                         MongoDatabase database = mongoClient.getDatabase("AdminSystem");
+//                         MongoCollection<Document> collection = database.getCollection("CourseManagement");
+
+//                         // Fetch all documents from the collection
+//                         try (MongoCursor<Document> cursor = collection.find().iterator()) {
+//                                 while (cursor.hasNext()) {
+//                                         Document doc = cursor.next();
+
+//                                         // Safely convert fields to integers or strings
+//                                         Object[] rowData = {
+//                                                         doc.getString("studentID"), // Always a string
+//                                                         parseInteger(doc.get("year")), // Convert safely
+//                                                         parseInteger(doc.get("semester1")), // Convert safely
+//                                                         doc.getString("course1"),
+//                                                         doc.getString("course2"),
+//                                                         doc.getString("course3"),
+//                                                         doc.getString("course4"),
+//                                                         doc.getString("course5"),
+//                                                         parseInteger(doc.get("semester2")), // Convert safely
+//                                                         doc.getString("course6"),
+//                                                         doc.getString("course7"),
+//                                                         doc.getString("course8"),
+//                                                         doc.getString("course9"),
+//                                                         doc.getString("course10")
+//                                         };
+
+//                                         // Add the row data to the table model
+//                                         model.addRow(rowData);
+
+//                                         // Save original data for potential reset
+//                                         originalData.add(rowData);
+//                                 }
+//                         }
+//                 } catch (Exception ex) {
+//                         // Print stack trace and show error dialog
+//                         ex.printStackTrace();
+//                         JOptionPane.showMessageDialog(this, "Failed to load course data: " + ex.getMessage(),
+//                                         "Error", JOptionPane.ERROR_MESSAGE);
+//                 }
+//         }
+
+//         public static void main(String[] args) {
+//                 new CourseManagement().setVisible(true);
+//         }
+// }
+
+
+
+ // public class Course {
+// private String Course;
+// private String studentID;
+// private String studentName;
+// private String studentGender;
+// private int studentAge;
+// private int studentYear;
+// private String studentAcademy;
+// private String studentAttendance;
+
+// Course(String course) {
+// this.Course = course;
+// }
+
+// public String getCourse(String course) {
+// return course;
+// }
+
+// public void addStudentInCourse(String studentID, String studentName, String
+// studentGender, int studentAge,
+// int studentYear, String studentAcademy, String studentAttendance) {
+// this.studentID = studentID;
+// this.studentName = studentName;
+// this.studentGender = studentGender;
+// this.studentAge = studentAge;
+// this.studentYear = studentYear;
+// this.studentAcademy = studentAcademy;
+// this.studentAttendance = studentAttendance;
+// }
+
+// public void displayStudentInCourse() {
+// System.out.println("Course: " + Course);
+// System.out.println("Student id: " + studentID);
+// System.out.println("Student name: " + studentName);
+// System.out.println("Student gender: " + studentGender);
+// System.out.println("Student age: " + studentAge);
+// System.out.println("Student year: " + studentYear);
+// System.out.println("Student academy: " + studentAcademy);
+// System.out.println("Student attendance: " + studentAttendance);
+// }
+
+// }
+
+
+
+
+
+// b6.addActionListener(e -> {
+// int selectedRow = jt.getSelectedRow(); // Get the selected row index
+// if (selectedRow != -1) { // Check if a row is selected
+// // Get the current values of the selected row
+// String stuID = model.getValueAt(selectedRow, 0).toString();
+// String name = model.getValueAt(selectedRow, 1).toString();
+// int age = Integer.parseInt(model.getValueAt(selectedRow, 2).toString());
+// String sex = model.getValueAt(selectedRow, 3).toString();
+// String major = model.getValueAt(selectedRow, 4).toString();
+// int year = Integer.parseInt(model.getValueAt(selectedRow, 5).toString());
+// String academyYear = model.getValueAt(selectedRow, 6).toString();
+// String email = model.getValueAt(selectedRow, 7).toString();
+// String phone = model.getValueAt(selectedRow, 9).toString();
+
+// // Create text fields for editing
+// JTextField nameField = new JTextField(name);
+// JTextField ageField = new JTextField(String.valueOf(age));
+// JTextField sexField = new JTextField(sex);
+// JTextField majorField = new JTextField(major);
+// JTextField yearField = new JTextField(String.valueOf(year));
+// JTextField academyYearField = new JTextField(academyYear);
+// JTextField emailField = new JTextField(email);
+// JTextField phoneField = new JTextField(phone);
+
+// // Create a panel with GridLayout to organize components
+// JPanel panel = new JPanel(new GridLayout(8, 2, 10, 10));
+// panel.add(new JLabel("Name:"));
+// panel.add(nameField);
+// panel.add(new JLabel("Age:"));
+// panel.add(ageField);
+// panel.add(new JLabel("Sex:"));
+// panel.add(sexField);
+// panel.add(new JLabel("Major:"));
+// panel.add(majorField);
+// panel.add(new JLabel("Year:"));
+// panel.add(yearField);
+// panel.add(new JLabel("Academy Year:"));
+// panel.add(academyYearField);
+// panel.add(new JLabel("Email:"));
+// panel.add(emailField);
+// panel.add(new JLabel("Phone Number:"));
+// panel.add(phoneField);
+
+// // Show dialog to modify selected student data
+// int option = JOptionPane.showConfirmDialog(null, panel, "Update Student",
+// JOptionPane.OK_CANCEL_OPTION);
+
+// if (option == JOptionPane.OK_OPTION) {
+// // Validate that all fields are filled
+// if (nameField.getText().isEmpty() || ageField.getText().isEmpty() ||
+// sexField.getText().isEmpty() || majorField.getText().isEmpty() ||
+// yearField.getText().isEmpty() || academyYearField.getText().isEmpty() ||
+// emailField.getText().isEmpty() || phoneField.getText().isEmpty()) {
+// JOptionPane.showMessageDialog(this, "Please fill in all the fields before
+// submitting.");
+// } else {
+// try (MongoClient mongoClient = MongoClients.create(
+// "mongodb+srv://Admin:admin12345@adminsystem.kedip.mongodb.net/?retryWrites=true&w=majority"))
+// {
+// // Connect to MongoDB
+// MongoDatabase database = mongoClient.getDatabase("AdminSystem");
+// MongoCollection<Document> collection =
+// database.getCollection("StudentManagement");
+
+// // Update logic
+// Document query = new Document("ID", stuID); // Match the correct student by
+// ID
+// Document update = new Document("$set", new Document()
+// .append("Name", nameField.getText())
+// .append("Age", Integer.parseInt(ageField.getText()))
+// .append("Sex", sexField.getText())
+// .append("Major", majorField.getText())
+// .append("Year", Integer.parseInt(yearField.getText()))
+// .append("AcademyYear", academyYearField.getText())
+// .append("Email", emailField.getText())
+// .append("PhoneNumber", phoneField.getText()));
+
+// collection.updateOne(query, update); // Perform update
+
+// // Update the JTable
+// model.setValueAt(nameField.getText(), selectedRow, 1);
+// model.setValueAt(ageField.getText(), selectedRow, 2);
+// model.setValueAt(sexField.getText(), selectedRow, 3);
+// model.setValueAt(majorField.getText(), selectedRow, 4);
+// model.setValueAt(Integer.parseInt(yearField.getText()), selectedRow, 5);
+// model.setValueAt(academyYearField.getText(), selectedRow, 6);
+// model.setValueAt(emailField.getText(), selectedRow, 7);
+// model.setValueAt(phoneField.getText(), selectedRow, 9);
+
+// JOptionPane.showMessageDialog(this, "Student updated successfully!");
+// } catch (Exception ex) {
+// ex.printStackTrace();
+// JOptionPane.showMessageDialog(this, "Failed to update student: " +
+// ex.getMessage(), "Error",
+// JOptionPane.ERROR_MESSAGE);
+// }
+// }
+// }
+// } else {
+// JOptionPane.showMessageDialog(this, "Please select a row to update!");
+// }
+// });
