@@ -1215,7 +1215,7 @@ public class ScoreManagement extends JFrame {
             columnNames.add("Total Point");
             columnNames.add("GPA");
 
-            System.out.println("📊 Extracted Columns: " + columnNames);
+            System.out.println("Extracted Columns: " + columnNames);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1225,12 +1225,12 @@ public class ScoreManagement extends JFrame {
     }
 
     private void loadDataAndInitializeTable(String year, String semester) {
-        System.out.println("🔍 Loading data for: " + year + " | " + semester);
+        System.out.println("Loading data for: " + year + " | " + semester);
 
         p5.removeAll();
 
         List<String> columns = getDynamicColumns(year, semester);
-        System.out.println("📊 Table Columns: " + columns);
+        System.out.println("Table Columns: " + columns);
 
         model = new DefaultTableModel(null, columns.toArray());
         jt = new JTable(model);
@@ -1258,7 +1258,7 @@ public class ScoreManagement extends JFrame {
             return;
         }
 
-        model.setRowCount(0); // ✅ Clear table before adding new data
+        model.setRowCount(0);
 
         try (MongoClient mongoClient = MongoClients.create(
                 "mongodb+srv://Admin:admin12345@adminsystem.kedip.mongodb.net/?retryWrites=true&w=majority")) {
@@ -1297,20 +1297,19 @@ public class ScoreManagement extends JFrame {
                         double totalScore = record.getDouble("TotalScore");
                         double gpa = record.getDouble("GPA");
 
-                        System.out.println("📌 Courses found: " + courses);
-                        System.out.println("📊 Total Score: " + totalScore + " | GPA: " + gpa);
+                        System.out.println("Courses found: " + courses);
+                        System.out.println("Total Score: " + totalScore + " | GPA: " + gpa);
 
                         List<Object> rowData = new ArrayList<>();
                         rowData.add(studentID);
                         rowData.add(studentName);
 
-                        // ✅ Store course scores
                         Map<String, Double> courseScores = new HashMap<>();
                         for (Document course : courses) {
                             String courseName = course.getString("CourseName") + " Score";
                             Double score = course.getDouble("Score");
                             courseScores.put(courseName, score);
-                            System.out.println("✅ Mapped Course: " + courseName + " -> " + score);
+                            System.out.println("Mapped Course: " + courseName + " -> " + score);
                         }
 
                         for (int i = 2; i < columns.size() - 2; i++) {
@@ -1322,7 +1321,7 @@ public class ScoreManagement extends JFrame {
 
                         model.addRow(rowData.toArray());
 
-                        System.out.println("📊 Added row: " + rowData);
+                        System.out.println("Added row: " + rowData);
                     }
                 }
             }
